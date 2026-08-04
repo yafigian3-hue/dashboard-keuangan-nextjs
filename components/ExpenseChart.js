@@ -3,8 +3,25 @@
 import { useEffect, useRef } from "react";
 import { rupiah } from "@/lib/format";
 import { useTheme } from "@/lib/useTheme";
+import {
+  Chart,
+  DoughnutController,
+  ArcElement,
+  Tooltip,
+  Legend,
+} from "chart.js";
 
-const CHART_COLORS = ["#f43f5e", "#fb6f84", "#fb923c", "#fbbf6b", "#fcd9a8", "#e11d48", "#fda4af"];
+Chart.register(DoughnutController, ArcElement, Tooltip, Legend);
+
+const CHART_COLORS = [
+  "#f43f5e",
+  "#fb6f84",
+  "#fb923c",
+  "#fbbf6b",
+  "#fcd9a8",
+  "#e11d48",
+  "#fda4af",
+];
 
 export default function ExpenseChart({ categories }) {
   const canvasRef = useRef(null);
@@ -16,11 +33,11 @@ export default function ExpenseChart({ categories }) {
   const total = data.reduce((sum, v) => sum + v, 0);
 
   useEffect(() => {
-    if (!window.Chart || !canvasRef.current) return;
+    if (!canvasRef.current) return;
 
     const isDark = theme === "dark";
 
-    chartRef.current = new window.Chart(canvasRef.current, {
+    chartRef.current = new Chart(canvasRef.current, {
       type: "doughnut",
       data: {
         labels,
@@ -33,7 +50,10 @@ export default function ExpenseChart({ categories }) {
         plugins: {
           legend: {
             position: "bottom",
-            labels: { color: isDark ? "#9ca3af" : "#6b7280", usePointStyle: true },
+            labels: {
+              color: isDark ? "#9ca3af" : "#6b7280",
+              usePointStyle: true,
+            },
           },
           tooltip: {
             callbacks: {
@@ -42,8 +62,7 @@ export default function ExpenseChart({ categories }) {
           },
         },
       },
-      // Plugin kecil untuk nulis total di tengah donat — sama seperti
-      // centerTextPlugin di js/dashboard.js
+    
       plugins: [
         {
           id: "centerText",
@@ -54,7 +73,9 @@ export default function ExpenseChart({ categories }) {
             ctx.save();
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillStyle = isDark ? "rgba(255,255,255,0.45)" : "rgba(17,34,28,0.4)";
+            ctx.fillStyle = isDark
+              ? "rgba(255,255,255,0.45)"
+              : "rgba(17,34,28,0.4)";
             ctx.font = "600 10px sans-serif";
             ctx.fillText("TOTAL PENGELUARAN", meta.x, meta.y - 14);
             ctx.fillStyle = isDark ? "#f9fafb" : "#11221c";
@@ -67,7 +88,6 @@ export default function ExpenseChart({ categories }) {
     });
 
     return () => chartRef.current?.destroy();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(categories), theme]);
 
   return (

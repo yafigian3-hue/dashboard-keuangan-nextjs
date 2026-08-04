@@ -3,26 +3,47 @@
 import { useEffect, useRef } from "react";
 import { rupiah } from "@/lib/format";
 import { useTheme } from "@/lib/useTheme";
+import {
+  Chart,
+  BarController,
+  BarElement,
+  CategoryScale,
+  LinearScale,
+  Tooltip,
+} from "chart.js";
 
-const MONTHS = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+Chart.register(BarController, BarElement, CategoryScale, LinearScale, Tooltip);
 
-// Ini port langsung dari renderChart() di js/dashboard.js. Bedanya:
-// - canvas diakses lewat useRef, bukan document.getElementById
-// - chart lama di-destroy di dalam "cleanup function" useEffect,
-//   pengganti pengecekan manual `if (financeChart) financeChart.destroy()`
+const MONTHS = [
+  "Jan",
+  "Feb",
+  "Mar",
+  "Apr",
+  "Mei",
+  "Jun",
+  "Jul",
+  "Agu",
+  "Sep",
+  "Okt",
+  "Nov",
+  "Des",
+];
+
 export default function FinanceChart({ incomeData, expenseData }) {
   const canvasRef = useRef(null);
   const chartRef = useRef(null);
   const { theme } = useTheme();
 
   useEffect(() => {
-    if (!window.Chart || !canvasRef.current) return;
+    if (!canvasRef.current) return;
 
     const isDark = theme === "dark";
-    const gridColor = isDark ? "rgba(255,255,255,0.06)" : "rgba(16,185,129,0.07)";
+    const gridColor = isDark
+      ? "rgba(255,255,255,0.06)"
+      : "rgba(16,185,129,0.07)";
     const tickColor = isDark ? "rgba(255,255,255,0.4)" : "rgba(17,34,28,0.4)";
 
-    chartRef.current = new window.Chart(canvasRef.current, {
+    chartRef.current = new Chart(canvasRef.current, {
       type: "bar",
       data: {
         labels: MONTHS,
@@ -30,14 +51,18 @@ export default function FinanceChart({ incomeData, expenseData }) {
           {
             label: "Pemasukan",
             data: incomeData,
-            backgroundColor: isDark ? "rgba(16,185,129,0.7)" : "rgba(16,185,129,0.85)",
+            backgroundColor: isDark
+              ? "rgba(16,185,129,0.7)"
+              : "rgba(16,185,129,0.85)",
             borderRadius: 6,
             borderSkipped: false,
           },
           {
             label: "Pengeluaran",
             data: expenseData,
-            backgroundColor: isDark ? "rgba(244,63,94,0.65)" : "rgba(244,63,94,0.8)",
+            backgroundColor: isDark
+              ? "rgba(244,63,94,0.65)"
+              : "rgba(244,63,94,0.8)",
             borderRadius: 6,
             borderSkipped: false,
           },
@@ -61,8 +86,6 @@ export default function FinanceChart({ incomeData, expenseData }) {
       },
     });
 
-    // cleanup: dipanggil otomatis sebelum effect berikutnya jalan,
-    // atau saat komponen unmount — ini pengganti `.destroy()` manual
     return () => chartRef.current?.destroy();
   }, [incomeData, expenseData, theme]);
 
