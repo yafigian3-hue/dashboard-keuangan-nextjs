@@ -3,8 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-// Port dari index.html + bagian login di js/auth.js.
-// window.location.href = "dashboard.html"  -->  router.push("/dashboard")
+
 export default function LoginPage() {
   const [username, setUsername] = useState("");
   const router = useRouter();
