@@ -1,48 +1,220 @@
-# Dashboard Keuangan — versi Next.js
+# 💰 Dashboard Keuangan
 
-Konversi dari https://github.com/yafigian3-hue/dashboard-keuangan-vanilla,
-logic-nya sama, cuma cara "menampilkannya" yang berubah dari manipulasi DOM
-manual menjadi React/Next.js.
+Dashboard Keuangan adalah aplikasi pencatatan pemasukan dan pengeluaran yang dibangun menggunakan **Next.js 14**, **React**, **Prisma ORM**, dan **SQLite**. Aplikasi ini membantu pengguna mencatat transaksi, melihat ringkasan keuangan, serta memonitor kondisi keuangan melalui tampilan dashboard yang modern dan responsif.
 
-## Cara jalankan
+> Project ini merupakan pengembangan dari versi Vanilla JavaScript yang kemudian dimigrasikan ke Next.js dengan arsitektur yang lebih modern.
+
+---
+
+## ✨ Fitur
+
+- 📊 Dashboard keuangan
+- ➕ Menambah transaksi
+- ✏️ Mengedit transaksi
+- 🗑️ Menghapus transaksi
+- 🔍 Mencari transaksi
+- 📂 Filter pemasukan & pengeluaran
+- 🌙 Dark Mode
+- 📈 Statistik pemasukan dan pengeluaran menggunakan Chart.js
+- 💾 Penyimpanan data menggunakan SQLite + Prisma ORM
+- 📱 Responsive Design
+
+---
+
+## 🛠 Tech Stack
+
+- Next.js 14
+- React 18
+- Prisma ORM
+- SQLite
+- Chart.js
+- Tailwind CSS
+
+---
+
+## 📁 Struktur Project
+
+```
+app/
+├── api/
+│   └── transactions/
+├── dashboard/
+├── transaksi/
+└── page.js
+
+components/
+├── AppShell.js
+├── TransactionForm.js
+├── TransactionList.js
+├── SummaryCards.js
+├── FinanceChart.js
+└── ExpenseChart.js
+
+lib/
+├── prisma.js
+├── storage.js
+├── useTransactions.js
+├── useAuth.js
+├── useTheme.js
+└── format.js
+
+prisma/
+├── schema.prisma
+└── migrations/
+```
+
+---
+
+## 🚀 Cara Menjalankan Project
+
+### Clone Repository
+
+```bash
+git clone https://github.com/yafigian3-hue/dashboard-keuangan-nextjs.git
+```
+
+Masuk ke folder project
+
+```bash
+cd dashboard-keuangan-nextjs
+```
+
+Install dependency
 
 ```bash
 npm install
+```
+
+Generate Prisma Client
+
+```bash
+npx prisma generate
+```
+
+Jalankan migration
+
+```bash
+npx prisma migrate dev
+```
+
+Jalankan aplikasi
+
+```bash
 npm run dev
 ```
 
-Buka http://localhost:3000
+Buka browser
 
-## Peta konversi (baca ini untuk belajar Next.js dari project kamu sendiri)
+```
+http://localhost:3000
+```
 
-| Vanilla (asli)                          | Next.js (project ini)              | Konsep Next.js yang dipelajari |
-|------------------------------------------|-------------------------------------|----------------------------------|
-| `index.html`                             | `app/page.js`                       | routing: nama folder/file = URL |
-| `dashboard.html`                         | `app/dashboard/page.js`             | nested route `/dashboard` |
-| `transaksi.html`                         | `app/transaksi/page.js`             | nested route `/transaksi` |
-| `<script src="js/...">` di tiap HTML     | `app/layout.js`                     | layout dipakai bareng semua halaman |
-| `js/storage.js`, `js/format.js`          | `lib/storage.js`, `lib/format.js`   | logic murni, HAMPIR TIDAK BERUBAH |
-| `js/auth.js` (cek localStorage + redirect) | `lib/useAuth.js` (`useRequireAuth`) | custom hook + `useRouter` |
-| toggle dark mode manual                  | `lib/useTheme.js`                   | state + `useEffect` sinkron ke DOM |
-| `loadTransactions()` + render manual     | `lib/useTransactions.js`            | state sebagai "sumber kebenaran", render otomatis |
-| `document.createElement("li")...`        | `components/TransactionList.js`     | `.map()` jadi JSX, bukan innerHTML |
-| sidebar di-copy paste di 3 file HTML     | `components/AppShell.js`            | komponen dipakai ulang |
-| `elements.categoryInput.value`           | `components/TransactionForm.js`     | controlled input (`useState`) |
-| `financeChart.destroy()` manual          | `components/FinanceChart.js`        | cleanup function di `useEffect` |
+---
 
-## Yang sengaja disederhanakan
+## 📦 Database
 
-- `export.html` di project asli tidak dikonversi karena isinya cuma
-  template sidebar kosong, belum ada logic export sungguhan.
-- Beberapa ikon SVG detail diganti simbol/emoji sederhana supaya kode
-  lebih mudah dibaca saat belajar — silakan ganti dengan `lucide-react`
-  kalau mau tampilan persis seperti aslinya.
+Project ini menggunakan **SQLite** sebagai database dan **Prisma ORM** sebagai Object Relational Mapper.
 
-## Langkah belajar yang disarankan
+Model database:
 
-1. Jalankan project ini dulu, bandingkan dengan versi vanilla-nya.
-2. Baca `lib/useTransactions.js` — ini jantung dari "kenapa React lebih
-   gampang" dibanding manipulasi DOM manual.
-3. Coba ubah satu komponen kecil dulu, misalnya `SummaryCards.js`.
-4. Baru masuk ke `app/dashboard/page.js` untuk lihat bagaimana semuanya
-   disatukan.
+```prisma
+model Transaction {
+  id        Int      @id @default(autoincrement())
+  name      String
+  amount    Float
+  type      String
+  createdAt DateTime @default(now())
+}
+```
+
+---
+
+## 🔌 REST API
+
+### GET
+
+```
+GET /api/transactions
+```
+
+Mengambil seluruh transaksi.
+
+### POST
+
+```
+POST /api/transactions
+```
+
+Menambahkan transaksi baru.
+
+### PUT
+
+```
+PUT /api/transactions
+```
+
+Mengubah transaksi.
+
+### DELETE
+
+```
+DELETE /api/transactions
+```
+
+Menghapus transaksi.
+
+---
+
+## 📸 Tampilan
+
+- Dashboard modern
+- Ringkasan saldo
+- Grafik pemasukan dan pengeluaran
+- Riwayat transaksi
+- Form tambah/edit transaksi
+- Dark Mode
+- Responsive Sidebar
+
+---
+
+## 📚 Pembelajaran
+
+Project ini dibuat untuk mempelajari:
+
+- Next.js App Router
+- React Hooks
+- Component Architecture
+- REST API
+- Prisma ORM
+- SQLite Database
+- CRUD Application
+- State Management
+- Responsive UI
+- Tailwind CSS
+
+---
+
+## 🔄 Riwayat Pengembangan
+
+Project ini merupakan versi lanjutan dari:
+
+**Dashboard Keuangan (Vanilla JavaScript)**
+
+https://github.com/yafigian3-hue/dashboard-keuangan-vanilla
+
+Versi Next.js membawa beberapa peningkatan:
+
+- Migrasi dari Local Storage ke SQLite
+- Integrasi Prisma ORM
+- REST API
+- Component-based Architecture
+- Modern UI
+- Edit transaksi
+- Dark Mode
+- Responsive Layout
+
+---
+
+## 📄 License
+
+Project ini dibuat untuk keperluan belajar dan pengembangan portfolio.
