@@ -1,10 +1,11 @@
 import { rupiah } from "@/lib/format";
 
-// Dulu setiap transaksi di-render dengan document.createElement("li") +
-// innerHTML template string (lihat renderTransactionItem di js/ui.js).
-// Di React, kita cukup .map() array transaksi menjadi JSX -- otomatis
-// re-render tiap kali `transactions` berubah, tanpa nulis ulang innerHTML.
-export default function TransactionList({ transactions, onDelete, showDelete = true }) {
+export default function TransactionList({
+  transactions,
+  onDelete,
+  onEdit,
+  showActions = true,
+}) {
   if (transactions.length === 0) {
     return (
       <p className="text-center py-10 text-sm font-semibold text-gray-400 dark:text-gray-500">
@@ -39,7 +40,9 @@ export default function TransactionList({ transactions, onDelete, showDelete = t
                 {isIncome ? "↑" : "↓"}
               </span>
               <div className="min-w-0">
-                <p className="font-bold text-gray-800 dark:text-white truncate">{t.name}</p>
+                <p className="font-bold text-gray-800 dark:text-white truncate">
+                  {t.name}
+                </p>
                 <p className="text-sm text-gray-500 dark:text-gray-400">
                   {isIncome ? "Pemasukan" : "Pengeluaran"} · {tanggal} {jam}
                 </p>
@@ -49,18 +52,29 @@ export default function TransactionList({ transactions, onDelete, showDelete = t
             <div className="flex flex-col items-end gap-1 flex-shrink-0">
               <span
                 className={`font-bold ${
-                  isIncome ? "text-brand-600 dark:text-brand-500" : "text-rose-600 dark:text-rose-400"
+                  isIncome
+                    ? "text-brand-600 dark:text-brand-500"
+                    : "text-rose-600 dark:text-rose-400"
                 }`}
               >
                 {isIncome ? "+" : "-"} {rupiah(t.amount)}
               </span>
-              {showDelete && (
-                <button
-                  onClick={() => onDelete(t.id)}
-                  className="text-xs font-semibold text-rose-500 dark:text-rose-400 hover:text-rose-700"
-                >
-                  Hapus
-                </button>
+              {showActions && (
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => onEdit(t)}
+                    className="text-xs font-semibold text-blue-500 hover:text-blue-700"
+                  >
+                    Edit
+                  </button>
+
+                  <button
+                    onClick={() => onDelete(t.id)}
+                    className="text-xs font-semibold text-rose-500 hover:text-rose-700"
+                  >
+                    Hapus
+                  </button>
+                </div>
               )}
             </div>
           </li>

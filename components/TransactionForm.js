@@ -1,16 +1,25 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CATEGORIES } from "@/lib/categories";
 
-// Dulu form ditangani lewat addTransactions() di js/transaksi.js yang
-// membaca .value dari elements.categoryInput/amountInput/typeInput
-// secara langsung. Di React, tiap input jadi "controlled" oleh state,
-// dan submit tinggal memanggil callback `onAdd` dari komponen induk.
-export default function TransactionForm({ onAdd }) {
+export default function TransactionForm({
+  onAdd,
+  onUpdate,
+  editingTransaction,
+  clearEditing,
+}) {
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("income");
+
+  useEffect(() => {
+    if (editingTransaction) {
+      setName(editingTransaction.name);
+      setAmount(editingTransaction.amount);
+      setType(editingTransaction.type);
+    }
+  }, [editingTransaction]);
 
   function handleSubmit(e) {
     e.preventDefault();
@@ -19,13 +28,33 @@ export default function TransactionForm({ onAdd }) {
 
     if (!trimmed || numAmount <= 0) return;
 
-    onAdd({ name: trimmed, amount: numAmount, type });
+    if (editingTransaction) {
+      onUpdate({
+        id: editingTransaction.id,
+        name: trimmed,
+        amount: numAmount,
+        type,
+      });
+
+      clearEditing();
+    } else {
+      onAdd({
+        name: trimmed,
+        amount: numAmount,
+        type,
+      });
+    }
+
     setName("");
     setAmount("");
+    setType("income");
   }
 
   return (
-    <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-4 gap-3 sm:gap-4">
+    <form
+      onSubmit={handleSubmit}
+      className="grid grid-cols-1 md:grid-cols-4 gap-3 sm:gap-4"
+    >
       <input
         list="categories"
         value={name}
@@ -61,8 +90,22 @@ export default function TransactionForm({ onAdd }) {
         type="submit"
         className="flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-brand-600 to-brand-700 text-white font-bold rounded-2xl shadow-soft hover:-translate-y-0.5 hover:opacity-95 transition-all duration-300"
       >
-        + Tambah
+        {editingTransaction ? "Update" : "+ Tambah"}
       </button>
+      {editingTransaction && (
+        <button
+          type="button"
+          onClick={() => {
+            clearEditing();
+            setName("");
+            setAmount("");
+            setType("income");
+          }}
+          className="px-4 py-3 rounded-2xl border border-gray-300 dark:border-white/10"
+        >
+          Batal
+        </button>
+      )}
     </form>
   );
 }

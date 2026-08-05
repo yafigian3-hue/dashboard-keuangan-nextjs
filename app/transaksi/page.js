@@ -9,20 +9,21 @@ import { useTransactions } from "@/lib/useTransactions";
 
 export default function TransaksiPage() {
   const { checked, logout } = useRequireAuth();
-  const { transactions, addTransaction, deleteTransaction } = useTransactions();
+  const { transactions, addTransaction, deleteTransaction, updateTransaction } =
+    useTransactions();
 
-  const [activeFilter, setActiveFilter] = useState("all"); // ganti dari `let activeFilter` di js/ui.js
+  const [activeFilter, setActiveFilter] = useState("all");
   const [searchOpen, setSearchOpen] = useState(false);
   const [keyword, setKeyword] = useState("");
+  const [editingTransaction, setEditingTransaction] = useState(null);
 
   if (!checked) return null;
 
-  // Sama persis logikanya dengan renderTransactions() di js/ui.js,
-  // bedanya di sini hasilnya sebuah array biasa untuk dirender lewat JSX.
   const filtered = [...transactions]
     .sort((a, b) => b.createdAt - a.createdAt)
     .filter((t) => {
-      const matchFilter = activeFilter === "all" ? true : t.type === activeFilter;
+      const matchFilter =
+        activeFilter === "all" ? true : t.type === activeFilter;
       const matchSearch = t.name.toLowerCase().includes(keyword.toLowerCase());
       return matchFilter && matchSearch;
     });
@@ -52,9 +53,13 @@ export default function TransaksiPage() {
           <h3 className="text-base sm:text-lg font-extrabold text-gray-900 dark:text-white mb-4">
             Tambah Transaksi
           </h3>
-          <TransactionForm onAdd={addTransaction} />
+          <TransactionForm
+            onAdd={addTransaction}
+            onUpdate={updateTransaction}
+            editingTransaction={editingTransaction}
+            clearEditing={() => setEditingTransaction(null)}
+          />{" "}
         </div>
-
         <div className="flex items-center gap-2">
           <div className="flex flex-1 gap-1.5 p-1.5 rounded-2xl bg-gray-100 dark:bg-white/5">
             {tabs.map((tab) => (
@@ -79,7 +84,6 @@ export default function TransaksiPage() {
             🔍
           </button>
         </div>
-
         {searchOpen && (
           <input
             autoFocus
@@ -89,8 +93,11 @@ export default function TransaksiPage() {
             className="w-full p-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-gray-50 dark:bg-white/5 dark:text-white focus:ring-2 focus:ring-brand-500 focus:outline-none"
           />
         )}
-
-        <TransactionList transactions={filtered} onDelete={deleteTransaction} />
+        <TransactionList
+          transactions={filtered}
+          onDelete={deleteTransaction}
+          onEdit={setEditingTransaction}
+        />
       </div>
     </AppShell>
   );

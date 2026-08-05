@@ -54,7 +54,11 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      <SummaryCards income={summary.income} expense={summary.expense} balance={summary.balance} />
+      <SummaryCards
+        income={summary.income}
+        expense={summary.expense}
+        balance={summary.balance}
+      />
 
       <div className="fade-up bg-white/90 dark:bg-ink-900/90 p-5 sm:p-6 lg:p-7 rounded-[1.75rem] border border-gray-100 dark:border-white/5 shadow-card w-full overflow-hidden">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-5">
@@ -69,7 +73,9 @@ export default function DashboardPage() {
           >
             <option value="all">Semua Bulan</option>
             {MONTH_OPTIONS.map((m, i) => (
-              <option key={m} value={i}>{m}</option>
+              <option key={m} value={i}>
+                {m}
+              </option>
             ))}
           </select>
         </div>
@@ -78,13 +84,17 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-5 mt-6">
           <div className="bg-gray-50/70 dark:bg-white/[0.02] rounded-3xl p-4 sm:p-5 border border-gray-100 dark:border-white/5 min-w-0">
-            <h4 className="font-bold mb-4 text-gray-900 dark:text-white">Kategori Pengeluaran</h4>
+            <h4 className="font-bold mb-4 text-gray-900 dark:text-white">
+              Kategori Pengeluaran
+            </h4>
             <ExpenseChart categories={expenseCategories} />
           </div>
 
           <div className="lg:col-span-2 bg-gray-50/70 dark:bg-white/[0.02] rounded-3xl p-4 sm:p-5 border border-gray-100 dark:border-white/5 min-w-0">
-            <h4 className="font-bold mb-4 text-gray-900 dark:text-white">Riwayat Transaksi</h4>
-            <TransactionList transactions={recent} showDelete={false} />
+            <h4 className="font-bold mb-4 text-gray-900 dark:text-white">
+              Riwayat Transaksi
+            </h4>
+            <TransactionList transactions={recent} showActions={false} />
           </div>
         </div>
       </div>
