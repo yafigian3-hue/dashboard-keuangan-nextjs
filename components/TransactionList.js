@@ -63,7 +63,7 @@ export default function TransactionList({
                 <div className="flex gap-2">
                   <button
                     onClick={() => onEdit(t)}
-                    className="text-xs font-semibold text-blue-500 hover:text-blue-700"
+                    className="text-xs font-semibold  text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-600"
                   >
                     Edit
                   </button>
