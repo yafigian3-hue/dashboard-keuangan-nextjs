@@ -69,7 +69,7 @@ export default function TransactionList({
                   </button>
 
                   <button
-                    onClick={() => onDelete(t.id)}
+                    onClick={() => onDelete(t)}
                     className="text-xs font-semibold text-rose-500 hover:text-rose-700"
                   >
                     Hapus

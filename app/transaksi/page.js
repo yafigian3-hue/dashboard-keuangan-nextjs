@@ -4,6 +4,7 @@ import { useState } from "react";
 import AppShell from "@/components/AppShell";
 import TransactionForm from "@/components/TransactionForm";
 import TransactionList from "@/components/TransactionList";
+import ConfirmModal from "@/components/ConfirmModal";
 import { useRequireAuth } from "@/lib/useAuth";
 import { useTransactions } from "@/lib/useTransactions";
 
@@ -54,6 +55,7 @@ export default function TransaksiPage() {
   const [searchOpen, setSearchOpen] = useState(false);
   const [keyword, setKeyword] = useState("");
   const [editingTransaction, setEditingTransaction] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
 
   if (!checked) return null;
 
@@ -140,8 +142,22 @@ export default function TransaksiPage() {
 
         <TransactionList
           transactions={filtered}
-          onDelete={deleteTransaction}
+          onDelete={setDeleteTarget}
           onEdit={setEditingTransaction}
+        />
+        <ConfirmModal
+          open={Boolean(deleteTarget)}
+          title="Hapus Transaksi"
+          message={
+            deleteTarget
+              ? `Apakah kamu yakin ingin menghapus transaksi ${deleteTarget.name}?`
+              : ""
+          }
+          onCancel={() => setDeleteTarget(null)}
+          onConfirm={() => {
+            deleteTransaction(deleteTarget.id);
+            setDeleteTarget(null);
+          }}
         />
       </div>
     </AppShell>
