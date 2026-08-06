@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 function TrashIcon({ className }) {
   return (
@@ -28,21 +29,34 @@ export default function ConfirmModal({
   onConfirm,
   onCancel,
 }) {
+  const [mounted, setMounted] = useState(false);
+
+  
+  useEffect(() => setMounted(true), []);
+
   useEffect(() => {
     if (!open) return;
+
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
     function handleKey(e) {
       if (e.key === "Escape") onCancel();
     }
     window.addEventListener("keydown", handleKey);
-    return () => window.removeEventListener("keydown", handleKey);
+
+    return () => {
+      document.body.style.overflow = originalOverflow;
+      window.removeEventListener("keydown", handleKey);
+    };
   }, [open, onCancel]);
 
-  if (!open) return null;
+  if (!mounted || !open) return null;
 
-  return (
+  return createPortal(
     <div
       onClick={onCancel}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-[fadeUp_0.2s_ease]"
+      className="fixed inset-0 z-[999] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
     >
       <div
         onClick={(e) => e.stopPropagation()}
@@ -84,6 +98,7 @@ export default function ConfirmModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
