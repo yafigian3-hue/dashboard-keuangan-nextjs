@@ -79,6 +79,32 @@ function ChevronDownIcon({ className }) {
   );
 }
 
+function LoadingSpinner({ className }) {
+  return (
+    <svg
+      className={`${className} animate-spin`}
+      viewBox="0 0 24 24"
+      fill="none"
+    >
+      <circle
+        cx="12"
+        cy="12"
+        r="10"
+        stroke="currentColor"
+        strokeWidth="3"
+        className="opacity-25"
+      />
+
+      <path
+        d="M22 12a10 10 0 00-10-10"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
 function AlertIcon({ className }) {
   return (
     <svg
@@ -116,6 +142,7 @@ export default function TransactionForm({
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("income");
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (editingTransaction) {
@@ -158,26 +185,41 @@ export default function TransactionForm({
     return Object.keys(newErrors).length === 0;
   }
 
-  function handleSubmit(e) {
+  async function handleSubmit(e) {
     e.preventDefault();
+
     if (!validate()) return;
 
     const trimmed = name.trim();
     const numAmount = Number(amount);
 
-    if (editingTransaction) {
-      onUpdate({
-        id: editingTransaction.id,
-        name: trimmed,
-        amount: numAmount,
-        type,
-      });
-      clearEditing();
-    } else {
-      onAdd({ name: trimmed, amount: numAmount, type });
-    }
+    try {
+      setLoading(true);
 
-    resetForm();
+      if (editingTransaction) {
+        await onUpdate({
+          id: editingTransaction.id,
+          name: trimmed,
+          amount: numAmount,
+          type,
+        });
+
+        clearEditing();
+      } else {
+        await onAdd({
+          name: trimmed,
+          amount: numAmount,
+          type,
+        });
+      }
+
+      resetForm();
+    } catch (error) {
+      console.error(error);
+      showToast("Terjadi kesalahan.", "error");
+    } finally {
+      setLoading(false);
+    }
   }
 
   function handleCancel() {
@@ -190,7 +232,6 @@ export default function TransactionForm({
   return (
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 items-start">
-        
         {/* Tipe */}
         <div className="relative">
           <select
@@ -263,9 +304,15 @@ export default function TransactionForm({
       <div className="flex flex-col sm:flex-row gap-3">
         <button
           type="submit"
-          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-brand-600 to-brand-700 text-white font-bold rounded-2xl shadow-soft hover:-translate-y-0.5 hover:opacity-95 active:translate-y-0 transition-all duration-300"
+          disabled={loading}
+          className="flex-1 flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-brand-600 to-brand-700 text-white font-bold rounded-2xl shadow-soft hover:-translate-y-0.5 hover:opacity-95 active:translate-y-0 transition-all duration-300 disabled:opacity-60 disabled:cursor-not-allowed"
         >
-          {isEditing ? (
+          {loading ? (
+            <>
+              <LoadingSpinner className="w-5 h-5" />
+              {isEditing ? "Menyimpan..." : "Menambahkan..."}
+            </>
+          ) : isEditing ? (
             <>
               <CheckIcon className="w-5 h-5" />
               Simpan Perubahan
