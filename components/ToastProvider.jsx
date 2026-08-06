@@ -1,39 +1,78 @@
 "use client";
 
-import { createContext, useContext, useState } from "react";
+import {
+  createContext,
+  useContext,
+  useRef,
+  useState,
+  useCallback,
+  useEffect,
+} from "react";
 
-const ToastContext = createContext();
+import Toast from "./Toast";
+
+const ToastContext = createContext(null);
+
+const AUTO_DISMISS_MS = 3000;
+const EXIT_ANIMATION_MS = 200; 
 
 export function ToastProvider({ children }) {
   const [toast, setToast] = useState(null);
+  const [visible, setVisible] = useState(false);
+  const dismissTimeoutRef = useRef(null);
+  const removeTimeoutRef = useRef(null);
 
-  function showToast(message, type = "success") {
-    setToast({
-      message,
-      type,
-    });
+ const hideToast = useCallback(() => {
+   clearTimeout(dismissTimeoutRef.current);
+   setVisible(false);
 
-    setTimeout(() => {
-      setToast(null);
-    }, 3000);
-  }
+   removeTimeoutRef.current = setTimeout(() => {
+     setToast(null);
+   }, EXIT_ANIMATION_MS);
+ }, []);
+
+ useEffect(() => {
+   return () => {
+     clearTimeout(dismissTimeoutRef.current);
+     clearTimeout(removeTimeoutRef.current);
+   };
+ }, []);
+
+ const showToast = useCallback(
+   (message, type = "success") => {
+     clearTimeout(dismissTimeoutRef.current);
+     clearTimeout(removeTimeoutRef.current);
+
+     setToast({ message, type });
+     requestAnimationFrame(() => setVisible(true));
+
+     dismissTimeoutRef.current = setTimeout(hideToast, AUTO_DISMISS_MS);
+   },
+   [hideToast],
+ );
 
   return (
     <ToastContext.Provider value={{ showToast }}>
       {children}
 
       {toast && (
-        <div
-          className="
-          fixed top-6 right-6 z-[100] rounded-2xl px-5 py-3 shadow-card bg-white dark:bg-ink-900 border border-gray-200 dark:border-white/10 fade-up"
-        >
-          <p className="font-semibold">{toast.message}</p>
-        </div>
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          visible={visible}
+          onClose={hideToast}
+        />
       )}
     </ToastContext.Provider>
   );
 }
 
 export function useToast() {
-  return useContext(ToastContext);
+  const context = useContext(ToastContext);
+
+  if (!context) {
+    throw new Error("useToast must be used inside ToastProvider");
+  }
+
+  return context;
 }

@@ -5,6 +5,7 @@ import AppShell from "@/components/AppShell";
 import TransactionForm from "@/components/TransactionForm";
 import TransactionList from "@/components/TransactionList";
 import ConfirmModal from "@/components/ConfirmModal";
+import { useToast } from "@/components/ToastProvider";
 import { useRequireAuth } from "@/lib/useAuth";
 import { useTransactions } from "@/lib/useTransactions";
 
@@ -56,6 +57,7 @@ export default function TransaksiPage() {
   const [keyword, setKeyword] = useState("");
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const { showToast } = useToast();
 
   if (!checked) return null;
 
@@ -98,8 +100,14 @@ export default function TransaksiPage() {
             {editingTransaction ? "Edit Transaksi" : "Tambah Transaksi"}
           </h3>
           <TransactionForm
-            onAdd={addTransaction}
-            onUpdate={updateTransaction}
+            onAdd={(data) => {
+              addTransaction(data);
+              showToast("Transaksi berhasil ditambahkan.");
+            }}
+            onUpdate={(data) => {
+              updateTransaction(data);
+              showToast("Transaksi berhasil diperbarui.");
+            }}
             editingTransaction={editingTransaction}
             clearEditing={() => setEditingTransaction(null)}
           />
@@ -156,6 +164,9 @@ export default function TransaksiPage() {
           onCancel={() => setDeleteTarget(null)}
           onConfirm={() => {
             deleteTransaction(deleteTarget.id);
+
+            showToast("Transaksi berhasil dihapus.", "error");
+
             setDeleteTarget(null);
           }}
         />
