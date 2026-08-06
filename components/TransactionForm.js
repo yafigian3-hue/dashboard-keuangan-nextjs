@@ -79,6 +79,33 @@ function ChevronDownIcon({ className }) {
   );
 }
 
+function AlertIcon({ className }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      fill="none"
+      viewBox="0 0 24 24"
+      strokeWidth="2"
+      stroke="currentColor"
+      className={className}
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        d="M12 9v3.75m0 3.375h.008v.008H12v-.008zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+      />
+    </svg>
+  );
+}
+
+function fieldClass(hasError) {
+  return `w-full bg-gray-50 dark:bg-white/5 dark:text-white dark:placeholder-gray-500 border p-3 rounded-2xl outline-none transition-all duration-200 ${
+    hasError
+      ? "border-red-300 dark:border-red-500/40 ring-2 ring-red-500/20 focus:ring-red-500/40"
+      : "border-gray-200 dark:border-white/10 focus:bg-white dark:focus:bg-white/5 focus:ring-2 focus:ring-brand-500 focus:border-transparent"
+  }`;
+}
+
 export default function TransactionForm({
   onAdd,
   onUpdate,
@@ -88,12 +115,14 @@ export default function TransactionForm({
   const [name, setName] = useState("");
   const [amount, setAmount] = useState("");
   const [type, setType] = useState("income");
+  const [errors, setErrors] = useState({});
 
   useEffect(() => {
     if (editingTransaction) {
       setName(editingTransaction.name);
       setAmount(editingTransaction.amount);
       setType(editingTransaction.type);
+      setErrors({});
     }
   }, [editingTransaction]);
 
@@ -101,14 +130,40 @@ export default function TransactionForm({
     setName("");
     setAmount("");
     setType("income");
+    setErrors({});
+  }
+
+  function validate() {
+    const newErrors = {};
+    const trimmed = name.trim();
+    const numAmount = Number(amount);
+
+    if (!trimmed) {
+      newErrors.name = "Nama transaksi wajib diisi.";
+    } else if (trimmed.length < 3) {
+      newErrors.name = "Nama transaksi minimal 3 karakter.";
+    } else if (trimmed.length > 50) {
+      newErrors.name = "Nama transaksi maksimal 50 karakter.";
+    }
+
+    if (amount === "") {
+      newErrors.amount = "Jumlah wajib diisi.";
+    } else if (numAmount <= 0) {
+      newErrors.amount = "Jumlah harus lebih dari 0.";
+    } else if (numAmount > 999999999) {
+      newErrors.amount = "Jumlah terlalu besar.";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   }
 
   function handleSubmit(e) {
     e.preventDefault();
+    if (!validate()) return;
+
     const trimmed = name.trim();
     const numAmount = Number(amount);
-
-    if (!trimmed || numAmount <= 0) return;
 
     if (editingTransaction) {
       onUpdate({
@@ -133,36 +188,69 @@ export default function TransactionForm({
   const isEditing = Boolean(editingTransaction);
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
-      {/* Grup input, selalu rapi dalam grid sendiri */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
-        <input
-          list="categories"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Kategori transaksi..."
-          className="bg-gray-50 dark:bg-white/5 dark:text-white dark:placeholder-gray-500 border border-gray-200 dark:border-white/10 focus:bg-white dark:focus:bg-white/5 focus:ring-2 focus:ring-brand-500 focus:border-transparent focus:outline-none p-3 rounded-2xl transition-all duration-300"
-        />
-        <datalist id="categories">
-          {CATEGORIES[type].map((c) => (
-            <option key={c} value={c} />
-          ))}
-        </datalist>
+    <form onSubmit={handleSubmit} noValidate className="space-y-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 items-start">
+        {/* Kategori */}
+        <div>
+          <input
+            list="categories"
+            value={name}
+            onChange={(e) => {
+              setName(e.target.value);
+              if (errors.name) setErrors((prev) => ({ ...prev, name: "" }));
+            }}
+            placeholder="Kategori transaksi..."
+            aria-invalid={Boolean(errors.name)}
+            aria-describedby={errors.name ? "name-error" : undefined}
+            className={fieldClass(errors.name)}
+          />
+          <datalist id="categories">
+            {CATEGORIES[type].map((c) => (
+              <option key={c} value={c} />
+            ))}
+          </datalist>
+          {errors.name && (
+            <p
+              id="name-error"
+              className="flex items-center gap-1 text-xs text-red-500 mt-1.5 px-1"
+            >
+              <AlertIcon className="w-3.5 h-3.5 shrink-0" />
+              {errors.name}
+            </p>
+          )}
+        </div>
 
-        <input
-          type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-          placeholder="Jumlah uang"
-          required
-          className="bg-gray-50 dark:bg-white/5 dark:text-white dark:placeholder-gray-500 border border-gray-200 dark:border-white/10 focus:bg-white dark:focus:bg-white/5 focus:ring-2 focus:ring-brand-500 focus:border-transparent focus:outline-none p-3 rounded-2xl transition-all duration-300"
-        />
+        {/* Jumlah */}
+        <div>
+          <input
+            type="number"
+            value={amount}
+            onChange={(e) => {
+              setAmount(e.target.value);
+              if (errors.amount) setErrors((prev) => ({ ...prev, amount: "" }));
+            }}
+            placeholder="Jumlah uang"
+            aria-invalid={Boolean(errors.amount)}
+            aria-describedby={errors.amount ? "amount-error" : undefined}
+            className={fieldClass(errors.amount)}
+          />
+          {errors.amount && (
+            <p
+              id="amount-error"
+              className="flex items-center gap-1 text-xs text-red-500 mt-1.5 px-1"
+            >
+              <AlertIcon className="w-3.5 h-3.5 shrink-0" />
+              {errors.amount}
+            </p>
+          )}
+        </div>
 
+        {/* Tipe */}
         <div className="relative">
           <select
             value={type}
             onChange={(e) => setType(e.target.value)}
-            className="appearance-none w-full bg-gray-50 dark:bg-white/5 dark:text-white border border-gray-200 dark:border-white/10 focus:bg-white dark:focus:bg-white/5 focus:ring-2 focus:ring-brand-500 focus:border-transparent focus:outline-none pl-3 pr-10 py-3 rounded-2xl transition-all duration-300"
+            className="appearance-none w-full bg-gray-50 dark:bg-white/5 dark:text-white border border-gray-200 dark:border-white/10 focus:bg-white dark:focus:bg-white/5 focus:ring-2 focus:ring-brand-500 focus:border-transparent focus:outline-none pl-3 pr-10 py-3 rounded-2xl transition-all duration-200"
           >
             <option value="income">Pemasukan</option>
             <option value="expense">Pengeluaran</option>
@@ -171,7 +259,6 @@ export default function TransactionForm({
         </div>
       </div>
 
-      {/* Grup tombol aksi, selalu nempel bareng, gak pernah nyangkut sendirian */}
       <div className="flex flex-col sm:flex-row gap-3">
         <button
           type="submit"
