@@ -8,8 +8,52 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
-  title: "Dashboard Keuangan",
-  description: "Dashboard keuangan pribadi — versi Next.js",
+  title: {
+    default: "Dashboard Keuangan",
+    template: "%s | Dashboard Keuangan",
+  },
+  description:
+    "Dashboard keuangan pribadi berbasis Next.js untuk mencatat pemasukan, pengeluaran, dan memantau kondisi finansial secara sederhana.",
+
+  keywords: [
+    "Dashboard Keuangan",
+    "Next.js",
+    "React",
+    "Prisma",
+    "Personal Finance",
+    "Expense Tracker",
+  ],
+
+  authors: [
+    {
+      name: "Yafi Gian",
+    },
+  ],
+
+  creator: "Yafi Gian",
+
+  // metadataBase: new URL("https://dashboard-keuangan-nextjs.vercel.app"),
+
+  openGraph: {
+    title: "Dashboard Keuangan",
+    description:
+      "Aplikasi pencatatan keuangan pribadi yang dibangun menggunakan Next.js dan Prisma.",
+    url: "https://dashboard-keuangan-nextjs.vercel.app",
+    siteName: "Dashboard Keuangan",
+    locale: "id_ID",
+    type: "website",
+  },
+
+  twitter: {
+    card: "summary_large_image",
+    title: "Dashboard Keuangan",
+    description: "Aplikasi pencatatan keuangan pribadi berbasis Next.js.",
+  },
+
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }) {
