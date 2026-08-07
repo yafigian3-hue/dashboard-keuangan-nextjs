@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import { rupiah } from "@/lib/format";
-import { useTheme } from "@/lib/useTheme";
+import { useTheme } from "@/lib/ThemeProvider";
 import {
   Chart,
   DoughnutController,
@@ -15,12 +15,13 @@ Chart.register(DoughnutController, ArcElement, Tooltip, Legend);
 
 const CHART_COLORS = [
   "#f43f5e",
-  "#fb6f84",
   "#fb923c",
-  "#fbbf6b",
-  "#fcd9a8",
-  "#e11d48",
-  "#fda4af",
+  "#f59e0b",
+  "#eab308",
+  "#84cc16",
+  "#06b6d4",
+  "#8b5cf6",
+  "#ec4899",
 ];
 
 export default function ExpenseChart({ categories }) {
@@ -31,9 +32,16 @@ export default function ExpenseChart({ categories }) {
   const labels = Object.keys(categories);
   const data = Object.values(categories);
   const total = data.reduce((sum, v) => sum + v, 0);
+  const isEmpty = labels.length === 0;
+
+  const colors = data.map((_, i) => CHART_COLORS[i % CHART_COLORS.length]);
 
   useEffect(() => {
     if (!canvasRef.current) return;
+
+    Chart.getChart(canvasRef.current)?.destroy();
+
+    if (isEmpty) return;
 
     const isDark = theme === "dark";
 
@@ -41,7 +49,14 @@ export default function ExpenseChart({ categories }) {
       type: "doughnut",
       data: {
         labels,
-        datasets: [{ data, backgroundColor: CHART_COLORS, borderWidth: 3 }],
+        datasets: [
+          {
+            data,
+            backgroundColor: colors,
+            borderWidth: 3,
+            borderColor: isDark ? "#0b1812" : "#f9fafb",
+          },
+        ],
       },
       options: {
         responsive: true,
@@ -53,16 +68,21 @@ export default function ExpenseChart({ categories }) {
             labels: {
               color: isDark ? "#9ca3af" : "#6b7280",
               usePointStyle: true,
+              boxWidth: 8,
+              padding: 14,
+              font: { size: 11 },
             },
           },
           tooltip: {
+            backgroundColor: isDark ? "#0b1812" : "#11221c",
+            padding: 10,
+            cornerRadius: 10,
             callbacks: {
               label: (ctx) => " " + ctx.label + ": " + rupiah(ctx.raw),
             },
           },
         },
       },
-    
       plugins: [
         {
           id: "centerText",
@@ -93,6 +113,15 @@ export default function ExpenseChart({ categories }) {
   return (
     <div className="relative w-full h-64 sm:h-72 lg:h-96">
       <canvas ref={canvasRef} className="!w-full !h-full" />
+
+      {isEmpty && (
+        <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 pointer-events-none">
+          <div className="w-24 h-24 rounded-full border-[10px] border-gray-100 dark:border-white/5" />
+          <p className="text-sm font-medium text-gray-400 dark:text-gray-600 -mt-2">
+            Belum ada pengeluaran
+          </p>
+        </div>
+      )}
     </div>
   );
 }

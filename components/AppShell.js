@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useTheme } from "@/lib/useTheme";
-
+import { useTheme } from "@/lib/ThemeProvider";
 
 function LogoIcon({ className }) {
   return (

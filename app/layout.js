@@ -1,5 +1,5 @@
 import { Plus_Jakarta_Sans } from "next/font/google";
-import { ToastProvider } from "@/components/ToastProvider";
+import { ThemeProvider } from "@/lib/ThemeProvider";
 import "./globals.css";
 
 const plusJakartaSans = Plus_Jakarta_Sans({
@@ -61,7 +61,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="id" className={plusJakartaSans.variable}>
       <body className="bg-dots bg-[#f4f7f5] dark:bg-ink-950 min-h-screen text-gray-800 dark:text-gray-100 antialiased selection:bg-brand-500/20">
-        <ToastProvider>{children}</ToastProvider>
+        <ThemeProvider>{children}</ThemeProvider>
       </body>
     </html>
   );
