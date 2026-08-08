@@ -2,37 +2,20 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useTheme } from "@/lib/ThemeProvider";
 
 function LogoIcon({ className }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="2"
-      stroke="currentColor"
-      className={className}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M3 13.5L7.5 9l3.5 3.5L21 4m0 0v5m0-5h-5"
-      />
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.5L7.5 9l3.5 3.5L21 4m0 0v5m0-5h-5" />
     </svg>
   );
 }
 
 function DashboardIcon({ className }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="1.8"
-      stroke="currentColor"
-      className={className}
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className={className}>
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -44,19 +27,8 @@ function DashboardIcon({ className }) {
 
 function TransaksiIcon({ className }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="1.8"
-      stroke="currentColor"
-      className={className}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"
-      />
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M7.5 21L3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5" />
     </svg>
   );
 }
@@ -83,14 +55,7 @@ function MoonIcon({ className }) {
 
 function LogoutIcon({ className }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="1.8"
-      stroke="currentColor"
-      className={className}
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.8" stroke="currentColor" className={className}>
       <path
         strokeLinecap="round"
         strokeLinejoin="round"
@@ -102,19 +67,8 @@ function LogoutIcon({ className }) {
 
 function MenuIcon({ className }) {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="2"
-      stroke="currentColor"
-      className={className}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
-      />
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor" className={className}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
     </svg>
   );
 }
@@ -124,11 +78,13 @@ const NAV_ITEMS = [
   { href: "/transaksi", label: "Transaksi", icon: TransaksiIcon },
 ];
 
-export default function AppShell({ active, onLogout, children }) {
+export default function AppShell({ onLogout, children }) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const pathname = usePathname();
   const { theme, toggleTheme } = useTheme();
 
   return (
+    <>
     <div className="flex min-h-screen">
       <aside
         className={`fixed top-0 left-0 h-screen w-72 bg-white/85 dark:bg-ink-900/90 backdrop-blur-2xl border-r border-gray-200/70 dark:border-white/5 p-6 z-50 transition-transform duration-300 md:translate-x-0 flex flex-col ${
@@ -136,38 +92,40 @@ export default function AppShell({ active, onLogout, children }) {
         }`}
       >
         {/* LOGO */}
-        <div className="flex items-center gap-3 mb-10">
-          <div className="relative w-12 h-12 rounded-2xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center shadow-soft">
-            <LogoIcon className="w-6 h-6 text-white" />
-            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full bg-emerald-400 ring-4 ring-white dark:ring-ink-900" />
-          </div>
+        <Link
+          href="/dashboard"
+          onClick={() => setSidebarOpen(false)}
+          className="flex items-center gap-3 mb-8"
+        >
+          <LogoIcon className="w-9 h-9" />
           <div>
-            <p className="text-lg font-extrabold tracking-tight text-gray-900 dark:text-white">
-              Keuangan
-            </p>
-            <span className="text-[10px] tracking-[0.25em] uppercase text-brand-600 dark:text-brand-500 font-bold">
-              Dashboard
-            </span>
+            <h1 className="font-extrabold text-xl text-gray-900 dark:text-white">Keuangan</h1>
+            <p className="text-xs text-gray-400">Personal Finance</p>
           </div>
-        </div>
+        </Link>
 
         <nav className="flex-1 space-y-1.5">
           <p className="px-4 mb-2 text-[10px] font-bold uppercase tracking-[0.18em] text-gray-400 dark:text-gray-600">
             Menu
           </p>
-          {NAV_ITEMS.map(({ href, label, icon: Icon }) => (
-            <Link
-              key={href}
-              href={href}
-              onClick={() => setSidebarOpen(false)}
-              className={`nav-link flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-300 ${
-                active === href ? "active" : ""
-              }`}
-            >
-              <Icon className="w-5 h-5 flex-shrink-0" />
-              {label}
-            </Link>
-          ))}
+
+          {NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+            const isActive = pathname === href;
+
+            return (
+              <Link
+                key={href}
+                href={href}
+                onClick={() => setSidebarOpen(false)}
+                className={`nav-link flex items-center gap-3 px-4 py-3 rounded-2xl font-semibold text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-white/5 transition-all duration-300 ${
+                  isActive ? "active" : ""
+                }`}
+              >
+                <Icon className="w-5 h-5 flex-shrink-0" />
+                {label}
+              </Link>
+            );
+          })}
         </nav>
 
         <div className="pt-4 border-t border-gray-200/70 dark:border-white/5 space-y-1">
@@ -212,5 +170,6 @@ export default function AppShell({ active, onLogout, children }) {
         {children}
       </main>
     </div>
-  );
+  </>
+);
 }

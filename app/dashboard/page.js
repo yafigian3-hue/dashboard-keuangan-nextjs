@@ -82,7 +82,7 @@ function ChevronDownIcon({ className }) {
 
 export default function DashboardPage() {
   const { checked, logout } = useRequireAuth();
-  const { transactions } = useTransactions();
+  const { transactions } = useTransactions(checked);
   const [selectedMonth, setSelectedMonth] = useState("all");
 
   if (!checked) return null;
