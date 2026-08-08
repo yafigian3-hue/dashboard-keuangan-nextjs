@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState, Suspense } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useToast } from "@/components/ToastProvider";
 
 function MailIcon({ className }) {
   return (
@@ -85,38 +86,29 @@ function EyeOffIcon({ className }) {
   );
 }
 
-function AlertIcon({ className }) {
-  return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      fill="none"
-      viewBox="0 0 24 24"
-      strokeWidth="2"
-      stroke="currentColor"
-      className={className}
-    >
-      <path
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        d="M12 9v3.75m0 3.375h.008v.008H12v-.008zM21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-      />
-    </svg>
-  );
-}
-
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const { showToast } = useToast();
+
+  useEffect(() => {
+    if (searchParams.get("registered") === "1") {
+      showToast(
+        "Registrasi berhasil! Silakan login dengan akun barumu.",
+        "success",
+      );
+      router.replace("/");
+    }
+  }, [searchParams]);
 
   async function handleSubmit(e) {
     e.preventDefault();
-
     setLoading(true);
-    setError("");
 
     try {
       const response = await fetch("/api/auth/login", {
@@ -128,13 +120,14 @@ export default function LoginPage() {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message);
+        showToast(data.message || "Login gagal. Coba lagi.", "error");
+        return;
       }
 
       router.push("/dashboard");
       router.refresh();
     } catch (err) {
-      setError(err.message);
+      showToast("Tidak bisa terhubung ke server. Coba lagi.", "error");
     } finally {
       setLoading(false);
     }
@@ -149,14 +142,14 @@ export default function LoginPage() {
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
-              strokeWidth="2"
+              strokeWidth="1.8"
               stroke="currentColor"
-              className="w-7 h-7 text-white"
+              className="w-6 h-6 text-white"
             >
               <path
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                d="M3 13.5L7.5 9l3.5 3.5L21 4m0 0v5m0-5h-5"
+                d="M21 12V7.5A2.5 2.5 0 0018.5 5h-13A2.5 2.5 0 003 7.5v9A2.5 2.5 0 005.5 19h13a2.5 2.5 0 002.5-2.5V12zm0 0h-4.5a1.5 1.5 0 100 3H21"
               />
             </svg>
           </div>
@@ -173,13 +166,6 @@ export default function LoginPage() {
           noValidate
           className="bg-white/90 dark:bg-ink-900/90 p-6 sm:p-7 rounded-[1.75rem] border border-gray-100 dark:border-white/5 shadow-card space-y-4"
         >
-          {error && (
-            <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-sm text-red-600 dark:text-red-400">
-              <AlertIcon className="w-4 h-4 shrink-0" />
-              {error}
-            </div>
-          )}
-
           <div className="relative">
             <MailIcon className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
             <input
@@ -237,5 +223,13 @@ export default function LoginPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={null}>
+      <LoginForm />
+    </Suspense>
   );
 }

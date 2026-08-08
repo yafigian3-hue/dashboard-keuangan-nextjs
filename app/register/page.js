@@ -4,6 +4,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useToast } from "@/components/ToastProvider";
 
 function UserIcon({ className }) {
   return (
@@ -134,6 +135,7 @@ function fieldClass(hasError) {
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { showToast } = useToast();
 
   const [form, setForm] = useState({
     name: "",
@@ -143,13 +145,11 @@ export default function RegisterPage() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
-  const [serverError, setServerError] = useState("");
   const [loading, setLoading] = useState(false);
 
   function updateField(key, value) {
     setForm((prev) => ({ ...prev, [key]: value }));
     if (errors[key]) setErrors((prev) => ({ ...prev, [key]: "" }));
-    if (serverError) setServerError("");
   }
 
   function validate() {
@@ -180,7 +180,6 @@ export default function RegisterPage() {
     if (!validate()) return;
 
     setLoading(true);
-    setServerError("");
 
     try {
       const res = await fetch("/api/auth/register", {
@@ -196,15 +195,14 @@ export default function RegisterPage() {
       const data = await res.json();
 
       if (!res.ok) {
-        // Pesan error dari server (mis. "Email sudah digunakan") ditampilkan apa adanya
-        setServerError(data.message || "Registrasi gagal. Coba lagi.");
+       
+        showToast(data.message || "Registrasi gagal. Coba lagi.", "error");
         return;
       }
 
-      // Registrasi berhasil, arahkan ke halaman login supaya user login manual
       router.push("/?registered=1");
     } catch (err) {
-      setServerError("Tidak bisa terhubung ke server. Coba lagi.");
+      showToast("Tidak bisa terhubung ke server. Coba lagi.", "error");
     } finally {
       setLoading(false);
     }
@@ -243,13 +241,6 @@ export default function RegisterPage() {
           noValidate
           className="bg-white/90 dark:bg-ink-900/90 p-6 sm:p-7 rounded-[1.75rem] border border-gray-100 dark:border-white/5 shadow-card space-y-4"
         >
-          {serverError && (
-            <div className="flex items-center gap-2 px-4 py-3 rounded-2xl bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/20 text-sm text-red-600 dark:text-red-400">
-              <AlertIcon className="w-4 h-4 shrink-0" />
-              {serverError}
-            </div>
-          )}
-
           {/* Nama */}
           <div>
             <div className="relative">
@@ -271,7 +262,7 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Email */}
+         
           <div>
             <div className="relative">
               <MailIcon className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -292,7 +283,7 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Password */}
+        
           <div>
             <div className="relative">
               <LockIcon className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
@@ -327,7 +318,7 @@ export default function RegisterPage() {
             )}
           </div>
 
-          {/* Konfirmasi password */}
+         
           <div>
             <div className="relative">
               <LockIcon className="w-5 h-5 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
