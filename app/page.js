@@ -121,14 +121,13 @@ function LoginForm() {
 
       if (!response.ok) {
         showToast(data.message || "Login gagal. Coba lagi.", "error");
+        setLoading(false);
         return;
       }
 
       router.push("/dashboard");
-      router.refresh();
-    } catch (err) {
+    } catch {
       showToast("Tidak bisa terhubung ke server. Coba lagi.", "error");
-    } finally {
       setLoading(false);
     }
   }
@@ -188,6 +187,7 @@ function LoginForm() {
               required
               className="w-full bg-gray-50 dark:bg-white/5 dark:text-white dark:placeholder-gray-500 border border-gray-200 dark:border-white/10 pl-11 pr-11 py-3 rounded-2xl outline-none focus:bg-white dark:focus:bg-white/5 focus:ring-2 focus:ring-brand-500 focus:border-transparent transition-all duration-200"
             />
+
             <button
               type="button"
               onClick={() => setShowPassword((v) => !v)}
@@ -208,7 +208,7 @@ function LoginForm() {
             disabled={loading}
             className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-brand-600 to-brand-700 text-white font-bold rounded-2xl shadow-soft hover:-translate-y-0.5 hover:opacity-95 active:translate-y-0 disabled:opacity-60 disabled:hover:translate-y-0 transition-all duration-300"
           >
-            {loading ? "Masuk..." : "Login"}
+            {loading ? "Masuk ke Dashboard..." : "Login"}
           </button>
 
           <p className="text-center text-sm text-gray-500 dark:text-gray-400">
