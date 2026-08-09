@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { TransaksiSkeleton } from "@/components/skeletons";
 import AppShell from "@/components/AppShell";
 import TransactionForm from "@/components/TransactionForm";
 import TransactionList from "@/components/TransactionList";
@@ -50,7 +51,7 @@ function SearchIcon({ className }) {
 export default function TransaksiPage() {
   const { checked, logout } = useRequireAuth();
   const { transactions, addTransaction, deleteTransaction, updateTransaction } =
-    useTransactions();
+    useTransactions(checked);
 
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -59,7 +60,13 @@ export default function TransaksiPage() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const { showToast } = useToast();
 
-  if (!checked) return null;
+  if (!checked) {
+    return (
+      <AppShell onLogout={logout}>
+        <TransaksiSkeleton />
+      </AppShell>
+    );
+  }
 
   const filtered = [...transactions]
     .sort((a, b) => b.createdAt - a.createdAt)

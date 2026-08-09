@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { DashboardSkeleton } from "@/components/skeletons";
 import AppShell from "@/components/AppShell";
 import SummaryCards from "@/components/SummaryCards";
 import FinanceChart from "@/components/FinanceChart";
@@ -85,7 +86,13 @@ export default function DashboardPage() {
   const { transactions } = useTransactions(checked);
   const [selectedMonth, setSelectedMonth] = useState("all");
 
-  if (!checked) return null;
+  if (!checked) {
+    return (
+      <AppShell onLogout={logout}>
+        <DashboardSkeleton />
+      </AppShell>
+    );
+  }
 
   const summary = calculateSummary(transactions, selectedMonth);
   const { incomeData, expenseData } = prepareChartData(
@@ -108,7 +115,7 @@ export default function DashboardPage() {
   return (
     <AppShell active="/dashboard" onLogout={logout}>
       <div className="fade-up relative mb-8 overflow-hidden ">
-        <div className="pointer-events-none absolute -top-16 -left-10 h-48 w-48 " />
+        <div className="pointer-events-none absolute -top-16 -left-10 h-48 w-48 rounded-full bg-brand-500/20 blur-3xl dark:bg-brand-500/10" />
 
         <div className="relative">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 mb-3 rounded-full bg-brand-100 dark:bg-brand-500/10 text-brand-700 dark:text-brand-500 text-xs font-bold">

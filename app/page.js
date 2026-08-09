@@ -126,6 +126,7 @@ function LoginForm() {
       }
 
       router.push("/dashboard");
+      router.refresh(); 
     } catch {
       showToast("Tidak bisa terhubung ke server. Coba lagi.", "error");
       setLoading(false);
