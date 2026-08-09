@@ -1,13 +1,10 @@
 "use client";
 
 import { useState } from "react";
-import { TransaksiSkeleton } from "@/components/skeletons";
-import AppShell from "@/components/AppShell";
 import TransactionForm from "@/components/TransactionForm";
 import TransactionList from "@/components/TransactionList";
 import ConfirmModal from "@/components/ConfirmModal";
 import { useToast } from "@/components/ToastProvider";
-import { useRequireAuth } from "@/lib/useAuth";
 import { useTransactions } from "@/lib/useTransactions";
 
 function PlusIcon({ className }) {
@@ -49,9 +46,8 @@ function SearchIcon({ className }) {
 }
 
 export default function TransaksiPage() {
-  const { checked, logout } = useRequireAuth();
   const { transactions, addTransaction, deleteTransaction, updateTransaction } =
-    useTransactions(checked);
+    useTransactions(true);
 
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchOpen, setSearchOpen] = useState(false);
@@ -59,14 +55,6 @@ export default function TransaksiPage() {
   const [editingTransaction, setEditingTransaction] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const { showToast } = useToast();
-
-  if (!checked) {
-    return (
-      <AppShell onLogout={logout}>
-        <TransaksiSkeleton />
-      </AppShell>
-    );
-  }
 
   const filtered = [...transactions]
     .sort((a, b) => b.createdAt - a.createdAt)
@@ -84,7 +72,7 @@ export default function TransaksiPage() {
   ];
 
   return (
-    <AppShell active="/transaksi" onLogout={logout}>
+    <>
       <div className="fade-up mb-8">
         <span className="inline-flex items-center gap-1.5 px-3 py-1 mb-3 rounded-full bg-brand-100 dark:bg-brand-500/10 text-brand-700 dark:text-brand-500 text-xs font-bold">
           <span className="w-1.5 h-1.5 rounded-full bg-brand-500" />
@@ -178,6 +166,6 @@ export default function TransaksiPage() {
           }}
         />
       </div>
-    </AppShell>
+    </>
   );
 }
