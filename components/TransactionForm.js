@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { CATEGORIES } from "@/lib/categories";
+import CustomSelect from "@/components/CustomSelect";
 
 function PlusIcon({ className }) {
   return (
@@ -233,17 +234,14 @@ export default function TransactionForm({
     <form onSubmit={handleSubmit} noValidate className="space-y-4">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4 items-start">
         {/* Tipe */}
-        <div className="relative">
-          <select
-            value={type}
-            onChange={(e) => setType(e.target.value)}
-            className="appearance-none w-full bg-gray-50 dark:bg-white/5 dark:text-white border border-gray-200 dark:border-white/10 focus:bg-white dark:focus:bg-white/5 focus:ring-2 focus:ring-brand-500 focus:border-transparent focus:outline-none pl-3 pr-10 py-3 rounded-2xl transition-all duration-200"
-          >
-            <option value="income">Pemasukan</option>
-            <option value="expense">Pengeluaran</option>
-          </select>
-          <ChevronDownIcon className="w-4 h-4 text-gray-400 absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-        </div>
+        <CustomSelect
+          value={type}
+          onChange={setType}
+          options={[
+            { value: "income", label: "Pemasukan" },
+            { value: "expense", label: "Pengeluaran" },
+          ]}
+        />
 
         {/* Kategori */}
         <div>

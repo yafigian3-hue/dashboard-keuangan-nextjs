@@ -11,6 +11,7 @@ import {
   prepareChartData,
   prepareExpenseCategoryData,
 } from "@/lib/useTransactions";
+import CustomSelect from "@/components/CustomSelect";
 
 const MONTH_OPTIONS = [
   "Januari",
@@ -135,21 +136,15 @@ export default function DashboardPage() {
             Ringkasan Keuangan
           </h3>
 
-          <div className="relative w-full sm:w-52">
-            <select
-              value={selectedMonth}
-              onChange={(e) => setSelectedMonth(e.target.value)}
-              className="w-full appearance-none px-4 py-2.5 pr-9 rounded-2xl bg-gray-50 dark:bg-white/5 border border-gray-200 dark:border-white/10 text-gray-700 dark:text-gray-200 font-medium focus:ring-2 focus:ring-brand-500 focus:outline-none transition-shadow"
-            >
-              <option value="all">Semua Bulan</option>
-              {MONTH_OPTIONS.map((m, i) => (
-                <option key={m} value={i}>
-                  {m}
-                </option>
-              ))}
-            </select>
-            <ChevronDownIcon className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-          </div>
+          <CustomSelect
+            className="w-full sm:w-52"
+            value={selectedMonth}
+            onChange={setSelectedMonth}
+            options={[
+              { value: "all", label: "Semua Bulan" },
+              ...MONTH_OPTIONS.map((m, i) => ({ value: String(i), label: m })),
+            ]}
+          />
         </div>
 
         <FinanceChart incomeData={incomeData} expenseData={expenseData} />

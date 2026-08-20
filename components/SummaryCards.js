@@ -44,7 +44,11 @@ export default function SummaryCards({ income, expense, balance }) {
 
         <div className="relative pr-14">
           <p className="text-brand-100 text-sm font-semibold">Total Saldo</p>
-          <p className="text-xl sm:text-2xl lg:text-3xl font-extrabold mt-2 leading-tight break-words">
+          <p
+            className="font-extrabold mt-2 leading-tight whitespace-nowrap overflow-hidden text-ellipsis tabular-nums"
+            style={{ fontSize: "clamp(1.1rem, 4.5vw, 1.875rem)" }}
+            title={rupiah(balance)}
+          >
             {rupiah(balance)}
           </p>
           <span className="inline-flex items-center gap-1 mt-3 px-2.5 py-1 rounded-full bg-white/15 text-xs font-semibold">
@@ -80,7 +84,11 @@ export default function SummaryCards({ income, expense, balance }) {
             </svg>
           </div>
         </div>
-        <p className="text-xl sm:text-2xl lg:text-3xl font-extrabold mt-1 text-gray-900 dark:text-white break-words leading-tight">
+        <p
+          className="font-extrabold mt-1 text-gray-900 dark:text-white leading-tight whitespace-nowrap overflow-hidden text-ellipsis tabular-nums"
+          style={{ fontSize: "clamp(1.1rem, 4.5vw, 1.875rem)" }}
+          title={rupiah(income)}
+        >
           {rupiah(income)}
         </p>
       </div>
@@ -112,7 +120,11 @@ export default function SummaryCards({ income, expense, balance }) {
             </svg>
           </div>
         </div>
-        <p className="text-xl sm:text-2xl lg:text-3xl font-extrabold mt-1 text-gray-900 dark:text-white break-words leading-tight">
+        <p
+          className="font-extrabold mt-1 text-gray-900 dark:text-white leading-tight whitespace-nowrap overflow-hidden text-ellipsis tabular-nums"
+          style={{ fontSize: "clamp(1.1rem, 4.5vw, 1.875rem)" }}
+          title={rupiah(expense)}
+        >
           {rupiah(expense)}
         </p>
       </div>
